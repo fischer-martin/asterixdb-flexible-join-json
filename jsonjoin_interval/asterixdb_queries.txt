@@ -1,0 +1,51 @@
+DROP DATAVERSE SpotifyDiscogs IF EXISTS;
+CREATE DATAVERSE SpotifyDiscogs;
+USE SpotifyDiscogs;
+
+CREATE TYPE SpotifyType AS {
+    id: string
+};
+CREATE TYPE DiscogsType AS {
+    id: int
+};
+
+
+CREATE DATASET Spotify(SpotifyType) PRIMARY KEY id;
+CREATE DATASET Discogs(DiscogsType) PRIMARY KEY id;
+
+LOAD DATASET Spotify USING localfs((`path`=`localhost:///media/Shared/Martin/Documents/Uni/Master_Informatik_Salzburg/22SS/Masterarbeit/music-metadata-scrapers/spotify_short.json`),(`format`=`json`));
+LOAD DATASET Discogs USING localfs((`path`=`localhost:///media/Shared/Martin/Documents/Uni/Master_Informatik_Salzburg/22SS/Masterarbeit/music-metadata-scrapers/discogs_short.json`),(`format`=`json`));
+
+
+
+
+
+USE SpotifyDiscogs;
+
+CREATE JOIN jsonjoin_interval(a, b, threshold: double)
+AS "jsonjoin.JsonJoin"
+AT flexiblejoins;
+
+
+
+
+
+USE SpotifyDiscogs;
+
+SELECT * FROM Metadata.`Library`;
+
+
+
+
+
+USE SpotifyDiscogs;
+
+SELECT *
+FROM Spotify s, Discogs d
+WHERE jsonjoin_interval(s, d, 300);
+
+
+
+
+
+DROP DATAVERSE SpotifyDiscogs;
