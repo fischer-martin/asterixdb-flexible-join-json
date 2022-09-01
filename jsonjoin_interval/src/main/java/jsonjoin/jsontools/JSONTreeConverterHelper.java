@@ -20,19 +20,19 @@ public class JSONTreeConverterHelper {
     private final JSONTreeTransformator treeTransformator = new JSONTreeTransformator();
 
     public List<Node> toTree(IVisitablePointable input) throws HyracksDataException {
+        // free buffers
+        treeTransformator.reset();
+        listAllocator.reset();
+
         // Convert the given data items into JSON trees.
-        List<Node> postToNode1 = listAllocator.allocate(null);
-        transArg.setLeft(postToNode1);
+        List<Node> postorderedTree = listAllocator.allocate(null);
+        postorderedTree.clear(); // ListObjectPool reuses Lists but does not clear them
+        transArg.setLeft(postorderedTree);
         transCnt.first(0);
         transCnt.second(0);
         transArg.setRight(transCnt);
-        return treeTransformator.toTree(input, transArg);
-    }
 
-    // TODO: maybe use this somewhere
-    // TODO: also reset listAllocator?
-    public void reset() {
-        treeTransformator.reset();
+        return treeTransformator.toTree(input, transArg);
     }
 
 }
