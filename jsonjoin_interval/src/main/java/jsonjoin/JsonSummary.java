@@ -1,12 +1,9 @@
 package jsonjoin;
 
-import jsonjoin.jsontools.Node;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
-
-import java.util.List;
 
 public class JsonSummary implements Summary<Object> {
 
@@ -15,20 +12,20 @@ public class JsonSummary implements Summary<Object> {
 
     public void add(Object k) {
         IVisitablePointable key = (IVisitablePointable) k;
-        List<Node> jsonTree;
+        int jsonTreeSize;
         JSONTreeConverterHelper JSONTreeConverterHelper = new JSONTreeConverterHelper();
 
         try {
-            jsonTree = JSONTreeConverterHelper.toTree(key);
+            jsonTreeSize = JSONTreeConverterHelper.calculateTreeSize(key);
         } catch (HyracksDataException e) {
             throw new RuntimeException(e);
         }
 
-        if (jsonTree.size() < minSize) {
-            minSize = jsonTree.size();
+        if (jsonTreeSize < minSize) {
+            minSize = jsonTreeSize;
         }
-        if (jsonTree.size() > maxSize) {
-            maxSize = jsonTree.size();
+        if (jsonTreeSize > maxSize) {
+            maxSize = jsonTreeSize;
         }
     }
 

@@ -1,6 +1,8 @@
 package jsonjoin.jsontools;
 
 import org.apache.asterix.om.pointables.AFlatValuePointable;
+import org.apache.asterix.runtime.evaluators.common.Node;
+import org.apache.asterix.runtime.evaluators.common.HungarianAlgorithm;
 
 import java.util.List;
 

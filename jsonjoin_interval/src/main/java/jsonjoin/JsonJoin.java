@@ -2,7 +2,7 @@ package jsonjoin;
 
 import jsonjoin.jsontools.JEDICalculator;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
-import jsonjoin.jsontools.Node;
+import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
@@ -46,8 +46,8 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
     }
 
     private int getBucket(double num, JsonJoinConfiguration jsonJoinConfiguration) {
-        int minSize = jsonJoinConfiguration.getMinSize();;
-        int maxSize = jsonJoinConfiguration.getMaxSize();;
+        int minSize = jsonJoinConfiguration.getMinSize();
+        int maxSize = jsonJoinConfiguration.getMaxSize();
         int numBuckets = jsonJoinConfiguration.getNumBuckets();
         int firstBucket = 1;
         int lastBucket = numBuckets;
@@ -60,16 +60,16 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     @Override
     public int[] assign1(Object k1, JsonJoinConfiguration jsonJoinConfiguration) {
-        List<Node> jsonTree;
+        int jsonTreeSize;
 
         try {
-            jsonTree = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k1);
+            jsonTreeSize = JSON_TREE_CONVERTER_HELPER.calculateTreeSize((IVisitablePointable) k1);
         } catch (HyracksDataException e) {
             throw new RuntimeException(e);
         }
 
-        int firstBucket = getBucket(jsonTree.size(), jsonJoinConfiguration);
-        int lastBucket = getBucket(jsonTree.size() + THRESHOLD, jsonJoinConfiguration);
+        int firstBucket = getBucket(jsonTreeSize, jsonJoinConfiguration);
+        int lastBucket = getBucket(jsonTreeSize + THRESHOLD, jsonJoinConfiguration);
         int[] buckets = new int[lastBucket - firstBucket + 1];
 
         for (int i = 0; i < buckets.length; ++i)
