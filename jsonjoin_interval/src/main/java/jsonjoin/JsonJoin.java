@@ -83,6 +83,8 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
         List<Node> jsonTree1;
         List<Node> jsonTree2;
 
+        JSON_TREE_CONVERTER_HELPER.reset();
+
         try {
             jsonTree1 = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k1);
             jsonTree2 = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k2);

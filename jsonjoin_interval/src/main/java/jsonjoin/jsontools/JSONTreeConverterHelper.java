@@ -23,11 +23,14 @@ public class JSONTreeConverterHelper {
     private final IObjectPool<List<Node>, ATypeTag> listAllocator = new ListObjectPool<>(new ArrayListFactory<Node>());
     private final JSONTreeTransformator treeTransformator = new JSONTreeTransformator();
 
+    /**
+     * Converts a given IVisitablePointable into a JSON tree as it is described in Huetter et al. (SIGMOD 2022).
+     * Call {@link JSONTreeConverterHelper#reset()} to free all buffers that this method uses (including the returned lists).
+     * @param input the IVisitablePointable that should be converted to a JSON tree
+     * @return a postordered List of the JSON tree's nodes
+     * @throws HyracksDataException
+     */
     public List<Node> toTree(IVisitablePointable input) throws HyracksDataException {
-        // free buffers
-        treeTransformator.reset();
-        listAllocator.reset();
-
         // Convert the given data items into JSON trees.
         List<Node> postorderedTree = listAllocator.allocate(null);
         postorderedTree.clear(); // ListObjectPool reuses Lists but does not clear them
@@ -37,6 +40,16 @@ public class JSONTreeConverterHelper {
         transArg.setRight(transCnt);
 
         return treeTransformator.toTree(input, transArg);
+    }
+
+    /**
+     * Frees all buffers used by {@link JSONTreeConverterHelper#toTree(IVisitablePointable)} including the lists that
+     * it returns.
+     */
+    public void reset() {
+        // free buffers
+        treeTransformator.reset();
+        listAllocator.reset();
     }
 
     public int calculateTreeSize(IVisitablePointable input)throws HyracksDataException {
