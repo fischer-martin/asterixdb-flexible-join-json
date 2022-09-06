@@ -1,13 +1,11 @@
 package jsonjoin.labelintersection;
 
-import jsonjoin.jsontools.JEDICalculator;
 import jsonjoin.jsontools.JEDIVerifier;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
-import org.apache.hadoop.yarn.webapp.hamlet2.Hamlet;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
 
 import java.util.*;
@@ -95,7 +93,6 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     @Override
     public int[] assign1(Object k1, JsonJoinConfiguration jsonJoinConfiguration) {
-        System.err.println(Thread.currentThread().getId() + ": config size is " + jsonJoinConfiguration.getBucketAssignments().size()); // TODO: remove
         final int PREFIX_LENGTH = (int) THRESHOLD + 1;
         List<Node> jsonTree;
         int[] buckets;
@@ -107,7 +104,6 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
         }
 
         if (jsonTree.size() <= THRESHOLD) {
-            System.err.println(Thread.currentThread().getId() + " in if-block"); // TODO: remove
             // Two trees T1, T2 will have JEDI(T1, T2) <= THRESHOLD if |T1| + |T2| <= THRESHOLD even if they don't
             // have a (label, type) tuple in common. => put tree T into bucket |T| and accommodate for this in match()
             TreeSet<LabelTypeBucketTuple> invertedFrequency = new TreeSet<>();
@@ -131,11 +127,6 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
             for (Node node : jsonTree) {
                 LabelTypeTuple ltt = new LabelTypeTuple(node.getLabel(), node.getType());
-                // TODO: remove
-                if (jsonJoinConfiguration.getBucketAssignments().get(ltt) != null)
-                    System.err.println(Thread.currentThread().getId() + ": " + jsonJoinConfiguration.getBucketAssignments().get(ltt).intValue());
-                else
-                    System.err.println(Thread.currentThread().getId() + ": null for tuple (" + ltt.label + ", " + ltt.type + ")");
                 invertedFrequency.add(new LabelTypeBucketTuple(ltt, jsonJoinConfiguration.getBucketAssignments().get(ltt)));
             }
 
@@ -181,19 +172,17 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     @Override
     public boolean verify(Object k1, Object k2) {
-        return true;
-        //return JEDI_VERIFIER.verify((IVisitablePointable) k1, (IVisitablePointable) k2, THRESHOLD);
+        return JEDI_VERIFIER.verify((IVisitablePointable) k1, (IVisitablePointable) k2, THRESHOLD);
     }
 
     @Override
     public boolean match(int b1, int b2) {
-        return true;
-//        // guaranteed match through de- and reconstruction of both trees (buckets in [0, THRESHOLD] are reserved for
-//        // trees with a size in [0, THRESHOLD]).
-//        if (b1 + b2 <= THRESHOLD)
-//            return true;
-//        else
-//            return b1 == b2;
+        // guaranteed match through de- and reconstruction of both trees (buckets in [0, THRESHOLD] are reserved for
+        // trees with a size in [0, THRESHOLD]).
+        if (b1 + b2 <= THRESHOLD)
+            return true;
+        else
+            return b1 == b2;
     }
 
 }
