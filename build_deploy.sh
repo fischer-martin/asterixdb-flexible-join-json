@@ -11,6 +11,6 @@ zip -j flexiblejoin.jar.zip target/*.jar
 
 curl --fail-with-body -v -u admin:adminpw -X POST -F 'data=@flexiblejoin.jar.zip' -F 'type=java' localhost:19005/admin/udf/SpotifyDiscogs/flexiblejoins
 
-curl --fail-with-body -v --data-urlencode 'statement=USE SpotifyDiscogs; CREATE JOIN jsonjoin_interval(a, b, threshold: double) AS "jsonjoin.JsonJoin" AT flexiblejoins;' http://localhost:19004/query/service
+curl --fail-with-body -v --data-urlencode 'statement=USE SpotifyDiscogs; CREATE JOIN jsonjoin_interval(a, b, threshold: double) AS "jsonjoin.lengthfilter.JsonJoin" AT flexiblejoins;' http://localhost:19004/query/service
 
 popd > /dev/null

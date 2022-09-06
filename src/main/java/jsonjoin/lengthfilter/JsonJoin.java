@@ -1,6 +1,7 @@
-package jsonjoin;
+package jsonjoin.lengthfilter;
 
 import jsonjoin.jsontools.JEDICalculator;
+import jsonjoin.jsontools.JEDIVerifier;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.external.cartilage.base.FlexibleJoin;
@@ -17,7 +18,7 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     private final double THRESHOLD;
     private final JSONTreeConverterHelper JSON_TREE_CONVERTER_HELPER = new JSONTreeConverterHelper();
-    private final JEDICalculator jediCalculator = new JEDICalculator();
+    private final JEDIVerifier JEDI_VERIFIER = new JEDIVerifier();
 
     public JsonJoin(double threshold) {
         this.THRESHOLD = threshold;
@@ -80,20 +81,6 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     @Override
     public boolean verify(Object k1, Object k2) {
-        List<Node> jsonTree1;
-        List<Node> jsonTree2;
-
-        JSON_TREE_CONVERTER_HELPER.reset();
-
-        try {
-            jsonTree1 = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k1);
-            jsonTree2 = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k2);
-        } catch (HyracksDataException e) {
-            throw new RuntimeException(e);
-        }
-
-        jediCalculator.prepareJEDI(jsonTree1, jsonTree2);
-
-        return jediCalculator.jedi(jsonTree1, jsonTree2) <= THRESHOLD;
+        return JEDI_VERIFIER.verify((IVisitablePointable) k1, (IVisitablePointable) k2, THRESHOLD);
     }
 }

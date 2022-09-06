@@ -23,7 +23,7 @@ LOAD DATASET Discogs USING localfs((`path`=`localhost:///media/Shared/Martin/Doc
 USE SpotifyDiscogs;
 
 CREATE JOIN jsonjoin_interval(a, b, threshold: double)
-AS "jsonjoin.JsonJoin"
+AS "jsonjoin.lengthfilter.JsonJoin"
 AT flexiblejoins;
 
 

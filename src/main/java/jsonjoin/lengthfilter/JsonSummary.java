@@ -1,4 +1,4 @@
-package jsonjoin;
+package jsonjoin.lengthfilter;
 
 import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.external.cartilage.base.Summary;
