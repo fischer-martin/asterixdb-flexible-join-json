@@ -7,8 +7,8 @@ import org.apache.hyracks.api.exceptions.HyracksDataException;
 
 public class JsonSummary implements Summary<Object> {
 
-    private int minSize = Integer.MIN_VALUE;
-    private int maxSize = Integer.MAX_VALUE;
+    private int minSize = Integer.MAX_VALUE;
+    private int maxSize = Integer.MIN_VALUE;
 
     public void add(Object k) {
         IVisitablePointable key = (IVisitablePointable) k;
