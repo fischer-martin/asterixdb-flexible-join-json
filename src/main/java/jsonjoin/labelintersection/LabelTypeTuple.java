@@ -13,8 +13,8 @@ public final class LabelTypeTuple implements Serializable {
     public LabelTypeTuple(IPointable label, int type) {
         // In theory, nodes in JSON trees only have a label if they are literal nodes or key nodes.
         if (type == 1 || type == 2) {
-            // IPointable is not serializable. I hope this works lol
-            // TODO: does this preserve types (e.g. string vs int)?
+            // IPointable is not serializable.
+            // The data type is preserved since its ID (see ATypeTag) is stored in the first byte of the byte array.
             this.label = Arrays.copyOfRange(label.getByteArray(), label.getStartOffset()
                     , label.getStartOffset() + label.getLength());
         } else {

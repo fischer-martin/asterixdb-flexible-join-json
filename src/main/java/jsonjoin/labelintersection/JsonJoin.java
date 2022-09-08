@@ -176,6 +176,11 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
     }
 
     @Override
+    public boolean verify(int b1, Object k1, int b2, Object k2, JsonJoinConfiguration c) {
+        return JEDI_VERIFIER.duplicateAvoidingVerify(this, b1, (IVisitablePointable) k1, b2, (IVisitablePointable) k2, c);
+    }
+
+    @Override
     public boolean match(int b1, int b2) {
         // guaranteed match through de- and reconstruction of both trees (buckets in [0, THRESHOLD] are reserved for
         // trees with a size in [0, THRESHOLD]).

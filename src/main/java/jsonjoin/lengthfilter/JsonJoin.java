@@ -1,15 +1,11 @@
 package jsonjoin.lengthfilter;
 
-import jsonjoin.jsontools.JEDICalculator;
 import jsonjoin.jsontools.JEDIVerifier;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
-import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
-
-import java.util.List;
 
 // For some reason we can only use Object instead of IVisitablePointable or else the DB will throw
 // HYR0066: Data pipeline protocol violation: fail() is not called by the upstream when there is a failure in the downstream [HyracksDataException]
@@ -82,5 +78,10 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
     @Override
     public boolean verify(Object k1, Object k2) {
         return JEDI_VERIFIER.verify((IVisitablePointable) k1, (IVisitablePointable) k2, THRESHOLD);
+    }
+
+    @Override
+    public boolean verify(int b1, Object k1, int b2, Object k2, JsonJoinConfiguration c) {
+        return JEDI_VERIFIER.duplicateAvoidingVerify(this, b1, (IVisitablePointable) k1, b2, (IVisitablePointable) k2, c);
     }
 }

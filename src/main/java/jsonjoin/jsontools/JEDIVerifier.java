@@ -1,5 +1,7 @@
 package jsonjoin.jsontools;
 
+import org.apache.asterix.external.cartilage.base.Configuration;
+import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
 import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
@@ -30,12 +32,37 @@ public class JEDIVerifier {
         // As we are using the unit cost model, if |T1| + |T2| <= threshold, we can guarantee that
         // jedi(T1, T2) <= threshold without calculating jed(T1, T2) since we can delete every node in T1 and insert
         // every node in T2 for a total cost of |T1| + |T2|.
-        if (jsonTree1.size() + jsonTree2.size() <= threshold)
+        if (jsonTree1.size() + jsonTree2.size() <= threshold) {
             return true;
+        }
 
         JEDI_CALCULATOR.prepareJEDI(jsonTree1, jsonTree2);
 
         return JEDI_CALCULATOR.jedi(jsonTree1, jsonTree2) <= threshold;
+    }
+
+    public boolean duplicateAvoidingVerify(FlexibleJoin join, int b1, IVisitablePointable k1, int b2
+            , IVisitablePointable k2, Configuration c) {
+        // Slightly rewritten default implementation of the duplicate avoidance where we verify a pair only if it is
+        // absolutely necessary but at the cost of always calculating two bucket assignments instead.
+        int[] buckets1DA = join.assign1(k1, c);
+        int[] buckets2DA = join.assign2(k2, c);
+        int i = 0;
+        int j = 0;
+
+        while (i < buckets1DA.length && j < buckets2DA.length) {
+            if (buckets1DA[i] == buckets2DA[j]) {
+                return buckets1DA[i] == b1 && buckets2DA[j] == b2 && join.verify(k1, k2);
+            } else {
+                if (buckets1DA[i] > buckets2DA[j]) {
+                    j++;
+                } else {
+                    i++;
+                }
+            }
+        }
+
+        return false;
     }
 
 }
