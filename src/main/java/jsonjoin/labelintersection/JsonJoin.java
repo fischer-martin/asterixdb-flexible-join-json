@@ -158,12 +158,6 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
                 buckets = bucketsOversized;
         }
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("buckets: " + buckets[0]);
-        for (int i = 1; i < buckets.length; ++i)
-            stringBuilder.append(", " + buckets[i]);
-        System.err.println(stringBuilder.toString());
-
         return buckets;
     }
 
