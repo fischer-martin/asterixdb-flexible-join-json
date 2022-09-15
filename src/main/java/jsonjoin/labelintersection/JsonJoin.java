@@ -1,9 +1,9 @@
 package jsonjoin.labelintersection;
 
+import jsonjoin.FlexibleJSONJoin;
 import jsonjoin.jsontools.JEDIVerifier;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.runtime.evaluators.common.Node;
-import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
@@ -13,7 +13,7 @@ import java.util.*;
 // For some reason we can only use Object instead of IVisitablePointable or else the DB will throw
 // HYR0066: Data pipeline protocol violation: fail() is not called by the upstream when there is a failure in the downstream [HyracksDataException]
 // Maybe (sadly I am not a wizard who knows everything about Java) this happens due to IVisitablePointable being an interface.
-public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
+public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration> {
 
     private final double THRESHOLD;
     private final JSONTreeConverterHelper JSON_TREE_CONVERTER_HELPER = new JSONTreeConverterHelper();
@@ -93,15 +93,21 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
 
     @Override
     public int[] assign1(Object k1, JsonJoinConfiguration jsonJoinConfiguration) {
-        final int PREFIX_LENGTH = (int) THRESHOLD + 1;
         List<Node> jsonTree;
-        int[] buckets;
 
         try {
             jsonTree = JSON_TREE_CONVERTER_HELPER.toTree((IVisitablePointable) k1);
         } catch (HyracksDataException e) {
             throw new RuntimeException(e);
         }
+
+        return assign1Parsed(jsonTree, jsonJoinConfiguration);
+    }
+
+    @Override
+    public int[] assign1Parsed(List<Node> jsonTree, JsonJoinConfiguration jsonJoinConfiguration) {
+        final int PREFIX_LENGTH = (int) THRESHOLD + 1;
+        int[] buckets;
 
         if (jsonTree.size() <= THRESHOLD) {
             // Two trees T1, T2 will have JEDI(T1, T2) <= THRESHOLD if |T1| + |T2| <= THRESHOLD even if they don't
@@ -161,8 +167,10 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
         return buckets;
     }
 
-    // TODO: maybe overwrite the overloaded verify() method by caching results since repeated calls to the assign()
-    // methods could become quite expensive over time
+    @Override
+    public boolean verifyParsed(List<Node> k1, List<Node> k2) {
+        return JEDI_VERIFIER.verifyParsed(k1, k2, THRESHOLD);
+    }
 
     @Override
     public boolean verify(Object k1, Object k2) {
