@@ -1,16 +1,19 @@
 package jsonjoin.lengthfilter;
 
+import jsonjoin.FlexibleJSONJoin;
 import jsonjoin.jsontools.JEDIVerifier;
 import jsonjoin.jsontools.JSONTreeConverterHelper;
-import org.apache.asterix.external.cartilage.base.FlexibleJoin;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
+import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
+
+import java.util.List;
 
 // For some reason we can only use Object instead of IVisitablePointable or else the DB will throw
 // HYR0066: Data pipeline protocol violation: fail() is not called by the upstream when there is a failure in the downstream [HyracksDataException]
 // Maybe (sadly I am not a wizard who knows everything about Java) this happens due to IVisitablePointable being an interface.
-public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
+public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration> {
 
     private final double THRESHOLD;
     private final JSONTreeConverterHelper JSON_TREE_CONVERTER_HELPER = new JSONTreeConverterHelper();
@@ -55,6 +58,22 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
         return clamp(bucket, firstBucket, lastBucket);
     }
 
+    private int[] getBucketsForTreeSize(int treeSize, JsonJoinConfiguration jsonJoinConfiguration) {
+        int firstBucket = getBucket(treeSize, jsonJoinConfiguration);
+        int lastBucket = getBucket(treeSize + THRESHOLD, jsonJoinConfiguration);
+        int[] buckets = new int[lastBucket - firstBucket + 1];
+
+        for (int i = 0; i < buckets.length; ++i)
+            buckets[i] = firstBucket + i;
+
+        return buckets;
+    }
+
+    @Override
+    public int[] assign1Parsed(List<Node> k1, JsonJoinConfiguration jsonJoinConfiguration) {
+        return getBucketsForTreeSize(k1.size(), jsonJoinConfiguration);
+    }
+
     @Override
     public int[] assign1(Object k1, JsonJoinConfiguration jsonJoinConfiguration) {
         int jsonTreeSize;
@@ -65,14 +84,12 @@ public class JsonJoin implements FlexibleJoin<Object, JsonJoinConfiguration> {
             throw new RuntimeException(e);
         }
 
-        int firstBucket = getBucket(jsonTreeSize, jsonJoinConfiguration);
-        int lastBucket = getBucket(jsonTreeSize + THRESHOLD, jsonJoinConfiguration);
-        int[] buckets = new int[lastBucket - firstBucket + 1];
+        return getBucketsForTreeSize(jsonTreeSize, jsonJoinConfiguration);
+    }
 
-        for (int i = 0; i < buckets.length; ++i)
-            buckets[i] = firstBucket + i;
-
-        return buckets;
+    @Override
+    public boolean verifyParsed(List<Node> k1, List<Node> k2) {
+        return JEDI_VERIFIER.verifyParsed(k1, k2, THRESHOLD);
     }
 
     @Override

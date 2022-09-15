@@ -46,35 +46,30 @@ public class JEDIVerifier {
         return verifyParsed(jsonTree1, jsonTree2, threshold);
     }
 
-    public boolean duplicateAvoidingVerify(FlexibleJoin join, int b1, IVisitablePointable k1, int b2
+    public boolean duplicateAvoidingVerify(FlexibleJSONJoin join, int b1, IVisitablePointable k1, int b2
             , IVisitablePointable k2, Configuration c) {
-        List<Node> jsonTree1 = null;
-        List<Node> jsonTree2 = null;
+        List<Node> jsonTree1;
+        List<Node> jsonTree2;
 
-        if (join instanceof FlexibleJSONJoin) {
-            JSON_TREE_CONVERTER_HELPER.reset();
+        JSON_TREE_CONVERTER_HELPER.reset();
 
-            try {
-                jsonTree1 = JSON_TREE_CONVERTER_HELPER.toTree(k1);
-                jsonTree2 = JSON_TREE_CONVERTER_HELPER.toTree(k2);
-            } catch (HyracksDataException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            jsonTree1 = JSON_TREE_CONVERTER_HELPER.toTree(k1);
+            jsonTree2 = JSON_TREE_CONVERTER_HELPER.toTree(k2);
+        } catch (HyracksDataException e) {
+            throw new RuntimeException(e);
         }
 
         // Slightly rewritten default implementation of the duplicate avoidance where we verify a pair only if it is
         // absolutely necessary but at the cost of always calculating two bucket assignments instead.
-        int[] buckets1DA = join instanceof FlexibleJSONJoin
-                ? ((FlexibleJSONJoin) join).assign1Parsed(jsonTree1, c) : join.assign1(k1, c);
-        int[] buckets2DA = join instanceof FlexibleJSONJoin
-                ? ((FlexibleJSONJoin) join).assign2Parsed(jsonTree2, c) : join.assign2(k2, c);
+        int[] buckets1DA = join.assign1Parsed(jsonTree1, c);
+        int[] buckets2DA = join.assign2Parsed(jsonTree2, c);
         int i = 0;
         int j = 0;
 
         while (i < buckets1DA.length && j < buckets2DA.length) {
             if (buckets1DA[i] == buckets2DA[j]) {
-                return buckets1DA[i] == b1 && buckets2DA[j] == b2&& (join instanceof FlexibleJSONJoin
-                        ? ((FlexibleJSONJoin) join).verifyParsed(jsonTree1, jsonTree2) : join.verify(k1, k2));
+                return buckets1DA[i] == b1 && buckets2DA[j] == b2 && join.verifyParsed(jsonTree1, jsonTree2);
             } else {
                 if (buckets1DA[i] > buckets2DA[j]) {
                     j++;
