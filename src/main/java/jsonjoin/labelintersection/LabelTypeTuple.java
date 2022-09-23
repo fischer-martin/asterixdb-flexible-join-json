@@ -6,8 +6,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
 
-public final class LabelTypeTuple implements Serializable {
-    final byte[] label;
+public final class LabelTypeTuple implements Serializable, Comparable<LabelTypeTuple> {
+    final byte[] label; // null if type is object, array, or multiset
     final int type; // 1: literal, 2: key, 3: object, 4: array, 5: multiset
 
     public LabelTypeTuple(IPointable label, int type) {
@@ -50,5 +50,23 @@ public final class LabelTypeTuple implements Serializable {
         result = 31 * result + Arrays.hashCode(label);
 
         return result;
+    }
+
+    /**
+     * Lexicographical order of (label, type) tuples by first looking at the type and then at the label.
+     *
+     * @param other (label, type) that this (label, type) should be compared to
+     * @return  a negative integer, zero, or a positive integer if this (label, type) is less than, equal to, or greater
+     *          than another (label, type)
+     */
+    @Override
+    public int compareTo(LabelTypeTuple other) {
+        if (type == other.type) {
+            if (type == 1 || type == 2) {
+                return java.util.Arrays.compare(label, other.label);
+            }
+            return 0;
+        }
+        return type - other.type;
     }
 }

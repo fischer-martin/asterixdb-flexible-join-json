@@ -6,6 +6,7 @@ import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.external.cartilage.base.Summary;
 import org.apache.asterix.om.pointables.base.IVisitablePointable;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.hyracks.api.exceptions.HyracksDataException;
 
 import java.util.*;
@@ -38,12 +39,16 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
         combinedSummaries.add((JsonSummary) s1);
         combinedSummaries.add((JsonSummary) s2);
 
-        // create a list where the tuples are ordered by their inverted frequency
-        // (i.e. tuples with a lower frequency come before tuples with a higher frequency)
+        // Create a list where the tuples are ordered by their inverted frequency
+        // (i.e. tuples with a lower frequency come before tuples with a higher frequency).
+        // In order to have the total order required for the prefix filter, we subsort (see labelTypeTuple.compareTo()) by (label, type)
+        // (i.e. we have a lexicographic order that first looks at the frequency and then at the (label, type)).
+        // We have to do this lexicographic ordering since if we didn't, then we would only have a total preorder instead.
         final List<LabelTypeTuple> invertedFrequencySortedLabelTypeTuples = combinedSummaries
                 .getLabelTypeCounts().entrySet()
                 .stream()
-                .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.naturalOrder()))
+                .sorted(Map.Entry.<LabelTypeTuple, MutableInt>comparingByValue(Comparator.naturalOrder())
+                        .thenComparing(Map.Entry.<LabelTypeTuple, MutableInt>comparingByKey()))
                 .map(Map.Entry::getKey)
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
@@ -82,6 +87,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
             if (o == null || getClass() != o.getClass())
                 return false;
             LabelTypeBucketTuple that = (LabelTypeBucketTuple) o;
+            // TODO: the way that we use this class (where for (label, type)-tuples a, b it holds that a == b iff bucket(a) == bucket(b)) should allow us to simplify this.
             return labelTypeTuple.equals(that.labelTypeTuple) && getBucket().equals(that.getBucket());
         }
 
@@ -109,6 +115,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
         final int PREFIX_LENGTH = (int) THRESHOLD + 1;
         int[] buckets;
 
+        // compute deduped (min(|T|, threshold + 1))-prefix
         if (jsonTree.size() <= THRESHOLD) {
             // Two trees T1, T2 will have JEDI(T1, T2) <= THRESHOLD if |T1| + |T2| <= THRESHOLD even if they don't
             // have a (label, type) tuple in common. => put tree T into bucket |T| and accommodate for this in match()
