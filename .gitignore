@@ -2,3 +2,7 @@
 *target
 
 *.zip
+
+test/test-config.json
+test/test-data/results
+test/test-data/statements
