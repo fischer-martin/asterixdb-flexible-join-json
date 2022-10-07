@@ -1,0 +1,11 @@
+USE {dataverse};
+
+CREATE JOIN jsonjoin_label_intersection(a, b, threshold: double)
+RETURNS BOOLEAN
+AS "jsonjoin.labelintersection.JsonJoin"
+AT `{join_library}`;
+
+-- workaround since the detection for overridden functions in QueryTranslator is currently disabled due to a bug when running the DB __not__ through AsterixHyracksIntegrationUtil
+DROP FUNCTION jsonjoin_label_intersection_fj_global_summary_two(a);
+DROP FUNCTION jsonjoin_label_intersection_fj_local_summary_two(a);
+DROP FUNCTION jsonjoin_label_intersection_fj_assign_two(a, b);

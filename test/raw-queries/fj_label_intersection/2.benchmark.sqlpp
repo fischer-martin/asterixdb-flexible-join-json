@@ -1,0 +1,8 @@
+USE {dataverse};
+
+SELECT ds1.auto_id AS d1, ds2.auto_id AS d2
+FROM {dataset1} ds1, {dataset2} ds2
+-- lazy eval in AsterixDB seems to work the other way around than one would expect
+WHERE jsonjoin_label_intersection(ds1{subdoc1}, ds2{subdoc2}, {threshold})
+    AND ds1.auto_id != ds2.auto_id
+ORDER BY d1.auto_id, d2.auto_id;

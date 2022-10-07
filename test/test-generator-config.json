@@ -1,0 +1,47 @@
+{
+    "connection_config": {
+        "url": "http://localhost",
+        "query_api_port": 19004,
+        "library_api_port": 19005,
+        "http_connection_timeout_sec": 9.2,
+        "username": "admin",
+        "password": "adminpw"
+    },
+    "query_timeouts": {
+        "preparation": "60s",
+        "benchmark": "60s",
+        "cleanup": "60s",
+        "fj-creation": "60s",
+        "warmup": "60s"
+    },
+    
+    "join_library": "flexiblejoin.jar.zip",
+
+    "tests": {
+        "reddit": {
+            "enabled": true,
+            "datasets": {
+                "1": {
+                    "file": "reddit/reddit.json",
+                    "format": "json",
+                    "subdoc": null
+                },
+                "2": null
+            },
+            "warmup_threshold": 20,
+            "config": {
+                "thresholds": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        10,
+                        20,
+                        50
+                ]
+            }
+        }
+    }
+}
