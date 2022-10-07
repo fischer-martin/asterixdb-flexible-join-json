@@ -7,7 +7,7 @@ test: default
 	@benchmark_config="test/test-config.json"
 	@data_dir="test/test-data"
 	@result_prefix="test_results"
-	@
+
 	@mkdir -p $${data_dir}/lib
 	@zip -FSj $${data_dir}/lib/flexiblejoin.jar.zip target/*.jar
 	@echo -n "generating config... "
