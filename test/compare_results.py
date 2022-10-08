@@ -4,6 +4,7 @@ import argparse
 import filecmp
 import json
 import os
+import sys
 
 def get_data_directory():
     return os.path.realpath(CONSOLE_ARGUMENTS.data_root)
@@ -55,3 +56,5 @@ for test, test_config in tests.items():
                     print("    threshold {thresh}: {status}".format(thresh = thresh, status = "PASSED" if native_res[thresh] == fj_res[thresh] else "FAILED"))
 
 print("number of failed tests: {failed_tests}".format(failed_tests = failed_tests))
+if failed_tests > 0:
+    sys.exit(1)
