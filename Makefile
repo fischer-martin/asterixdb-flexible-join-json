@@ -19,3 +19,8 @@ test: default
 	@echo "comparing query results..."
 	@python3 test/compare_results.py --config $${gen_config} --data-root $${data_dir} --result-filename-prefix $${result_prefix}
 	@echo "done"
+
+clean:
+	rm -rf target
+	rm -rf test/test-data/results
+	rm -rf test/test-data/lib
