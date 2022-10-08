@@ -45,9 +45,13 @@ for test, test_config in tests.items():
         for fj_test in fj_join_types:
             fj_result_filename = get_results_directory() + "/" + get_run_name_for_test(test, fj_test) + "/" + CONSOLE_ARGUMENTS.result_filename_prefix + ".json"
             if filecmp.cmp(native_result_filename, fj_result_filename):
-                print("    {fj_test}: PASSED".format(fj_test = fj_test))
+                print("  {fj_test}: PASSED".format(fj_test = fj_test))
             else:
-                print("    {fj_test}: FAILED".format(fj_test = fj_test))
+                print("  {fj_test}: FAILED".format(fj_test = fj_test))
                 failed_tests += 1
+                native_res = read_file_content(native_result_filename, True)
+                fj_res = read_file_content(fj_result_filename, True)
+                for thresh in native_res.keys():
+                    print("    threshold {thresh}: {status}".format(thresh = thresh, status = "PASSED" if native_res[thresh] == fj_res[thresh] else "FAILED"))
 
 print("number of failed tests: {failed_tests}".format(failed_tests = failed_tests))
