@@ -18,40 +18,39 @@
     "join_library": "flexiblejoin.jar.zip",
 
     "tests": {
-        "reddit": {
+        "self-join": {
             "enabled": true,
             "datasets": {
                 "1": {
-                    "file": "reddit/reddit.json",
-                    "format": "json",
+                    "file": "random-gen/n20_s2_irecordid.adm",
+                    "format": "adm",
                     "subdoc": null
                 },
                 "2": null
             },
             "config": {
                 "thresholds": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4,
-                        5,
-                        10,
-                        20,
-                        50
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    10,
+                    15
                 ]
             }
         },
-        "n20_s2__n50_s1": {
+        "join": {
             "enabled": true,
             "datasets": {
                 "1": {
-                    "file": "random-gen/n20_s2.adm",
+                    "file": "random-gen/n20_s2_irecordid.adm",
                     "format": "adm",
                     "subdoc": null
                 },
                 "2": {
-                    "file": "random-gen/n50_s1.adm",
+                    "file": "random-gen/n50_s1_irecordid.adm",
                     "format": "adm",
                     "subdoc": null
                 }
@@ -69,16 +68,16 @@
                 ]
             }
         },
-        "n70_s3_c7_0_3_ktic_subdoc__n40_s4_c7_0_3_ktoc_subdoc": {
+        "join_with_subdocs": {
             "enabled": true,
             "datasets": {
                 "1": {
-                    "file": "random-gen/n70_s3_c7_0_3_ktic.adm",
+                    "file": "random-gen/n70_s3_c7_0_3_ktic_irecordid.adm",
                     "format": "adm",
                     "subdoc": ".tic"
                 },
                 "2": {
-                    "file": "random-gen/n40_s4_c7_0_3_ktoc.adm",
+                    "file": "random-gen/n40_s4_c7_0_3_ktoc_irecordid.adm",
                     "format": "adm",
                     "subdoc": ".toc"
                 }
@@ -96,16 +95,16 @@
                 ]
             }
         },
-        "n40_s4_c7_0_3_ktoc_subdoc__n50_s1": {
+        "join_with_one_subdoc": {
             "enabled": true,
             "datasets": {
                 "1": {
-                    "file": "random-gen/n40_s4_c7_0_3_ktoc.adm",
+                    "file": "random-gen/n40_s4_c7_0_3_ktoc_irecordid.adm",
                     "format": "adm",
                     "subdoc": ".toc"
                 },
                 "2": {
-                    "file": "random-gen/n50_s1.adm",
+                    "file": "random-gen/n50_s1_irecordid.adm",
                     "format": "adm",
                     "subdoc": null
                 }
@@ -123,11 +122,11 @@
                 ]
             }
         },
-        "n40_s4_c7_0_3_ktoc_subdoc": {
+        "self-join_with_subdoc": {
             "enabled": true,
             "datasets": {
                 "1": {
-                    "file": "random-gen/n40_s4_c7_0_3_ktoc.adm",
+                    "file": "random-gen/n40_s4_c7_0_3_ktoc_irecordid.adm",
                     "format": "adm",
                     "subdoc": ".toc"
                 },
