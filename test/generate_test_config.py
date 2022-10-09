@@ -121,33 +121,15 @@ def set_up_fj_creation_files(test, fj_join_types):
         dst = get_query_directory(get_run_name_for_test(test, join_type)) + "/" + filename
         shutil.copyfile(src, dst)
 
-def set_up_warmup_files(test, datasets, warmup_threshold, join_types):
-    def set_up_warmup_file(join_type):
-        def format_subdoc_and_dataset_and_warmup_threshold(warmup_query, num, subdoc, dataset_identifier):
-            formatted = warmup_query.replace("{{subdoc{num}}}".format(num = num), subdoc if subdoc else "")
-            formatted = formatted.replace("{{dataset{num}}}".format(num = num), dataset_identifier)
-            formatted = formatted.replace("{warmup_threshold}", str(warmup_threshold))
-
-            return formatted
-
-        filename = get_raw_queries_directory() + "/" + join_type + "/5.warmup.sqlpp"
-        warmup_query = read_file_content(filename)
-        warmup_query = format_subdoc_and_dataset_and_warmup_threshold(warmup_query, 1, datasets["1"]["subdoc"], "DS1")
-        if datasets["2"]:
-            warmup_query = format_subdoc_and_dataset_and_warmup_threshold(warmup_query, 2, datasets["2"]["subdoc"], "DS2")
-        else:
-            warmup_query = format_subdoc_and_dataset_and_warmup_threshold(warmup_query, 2, datasets["1"]["subdoc"], "DS1")
-
-        query_dir = get_query_directory(get_run_name_for_test(test, join_type))
-        with open(query_dir + "/5.warmup.sqlpp", "w") as warmup_query_file:
-            warmup_query_file.write(warmup_query)
-
+def set_up_warmup_files(test, datasets, join_types):
     def create_nop_warmup_file(test):
         create_nop_query_file("5.warmup.sqlpp", test)
 
     create_nop_warmup_file(get_run_name_for_test(test, "init"))
     for join_type in join_types:
-        set_up_warmup_file(join_type)
+        # we don't need no warmup since we are only interested in the query results and not in accurate execution times
+        #set_up_warmup_file(join_type)
+        create_nop_warmup_file(get_run_name_for_test(test, join_type))
     create_nop_warmup_file(get_run_name_for_test(test, "cleanup"))
 
 def add_runs_to_output_config(output_config, test, join_types, fj_join_types, thresholds, join_library, query_timeouts = None):
@@ -212,7 +194,7 @@ for test, test_config in tests.items():
         set_up_benchmark_files(test, datasets, join_types)
         set_up_cleanup_files(test, join_types)
         set_up_fj_creation_files(test, fj_join_types)
-        set_up_warmup_files(test, datasets, test_config["warmup_threshold"], join_types)
+        set_up_warmup_files(test, datasets, join_types)
         add_runs_to_output_config(output_config, test, join_types, fj_join_types, test_config["config"]["thresholds"], config["join_library"], test_config["config"]["query_timeouts"] if "query_timeouts" in test_config["config"].keys() else None)
 
 with open(CONSOLE_ARGUMENTS.output, "w") as output_config_file:

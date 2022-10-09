@@ -28,7 +28,6 @@
                 },
                 "2": null
             },
-            "warmup_threshold": 20,
             "config": {
                 "thresholds": [
                         0,
@@ -57,7 +56,6 @@
                     "subdoc": null
                 }
             },
-            "warmup_threshold": 0,
             "config": {
                 "thresholds": [
                     0,
@@ -85,7 +83,6 @@
                     "subdoc": ".toc"
                 }
             },
-            "warmup_threshold": 0,
             "config": {
                 "thresholds": [
                     0,
@@ -113,7 +110,6 @@
                     "subdoc": null
                 }
             },
-            "warmup_threshold": 0,
             "config": {
                 "thresholds": [
                     0,
@@ -137,7 +133,6 @@
                 },
                 "2": null
             },
-            "warmup_threshold": 0,
             "config": {
                 "thresholds": [
                     0,
