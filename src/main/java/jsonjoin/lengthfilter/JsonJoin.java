@@ -34,44 +34,18 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
         JsonSummary jsonSummary2 = (JsonSummary) s2;
 
         int min = Math.min(jsonSummary1.getMinSize(), jsonSummary2.getMinSize());
-        int max = Math.max(jsonSummary1.getMaxSize(), jsonSummary2.getMaxSize());
-        // TODO: check again if this is correct
-        int numBuckets = Math.max(1, max - min);
 
-        return new JsonJoinConfiguration(min, max, numBuckets);
+        return new JsonJoinConfiguration(min);
     }
 
-    private int clamp(int val, int min, int max) {
-        return Math.min(Math.max(min, val), max);
-    }
-
-    private int getBucket(double num, JsonJoinConfiguration jsonJoinConfiguration) {
-        int minSize = jsonJoinConfiguration.getMinSize();
-        int maxSize = jsonJoinConfiguration.getMaxSize();
-        int numBuckets = jsonJoinConfiguration.getNumBuckets();
-        int firstBucket = 1;
-        int lastBucket = numBuckets;
-
-        // needs to be clamped to get correct result if num == minSize or num > maxSize or minSize == maxSize
-        int bucket = (int) Math.ceil(((num - minSize) * numBuckets) / (maxSize - minSize));
-
-        return clamp(bucket, firstBucket, lastBucket);
-    }
-
-    private int[] getBucketsForTreeSize(int treeSize, JsonJoinConfiguration jsonJoinConfiguration) {
-        int firstBucket = getBucket(treeSize, jsonJoinConfiguration);
-        int lastBucket = getBucket(treeSize + THRESHOLD, jsonJoinConfiguration);
-        int[] buckets = new int[lastBucket - firstBucket + 1];
-
-        for (int i = 0; i < buckets.length; ++i)
-            buckets[i] = firstBucket + i;
-
-        return buckets;
+    private int[] getBucketForTreeSize(int treeSize, JsonJoinConfiguration jsonJoinConfiguration) {
+        // normalize buckets since idk if it is less efficient if our buckets don't start at 0
+        return new int[]{treeSize - jsonJoinConfiguration.getMinSize()};
     }
 
     @Override
     public int[] assign1Parsed(List<Node> k1, JsonJoinConfiguration jsonJoinConfiguration) {
-        return getBucketsForTreeSize(k1.size(), jsonJoinConfiguration);
+        return getBucketForTreeSize(k1.size(), jsonJoinConfiguration);
     }
 
     @Override
@@ -84,7 +58,13 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
             throw new RuntimeException(e);
         }
 
-        return getBucketsForTreeSize(jsonTreeSize, jsonJoinConfiguration);
+        return getBucketForTreeSize(jsonTreeSize, jsonJoinConfiguration);
+    }
+
+    @Override
+    public boolean match(int b1, int b2) {
+        // buckets represent (normalized) tree sizes => can easily apply size filter
+        return Math.abs(b1 - b2) <= THRESHOLD;
     }
 
     @Override
@@ -99,6 +79,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
 
     @Override
     public boolean verify(int b1, Object k1, int b2, Object k2, JsonJoinConfiguration c) {
-        return JEDI_VERIFIER.duplicateAvoidingVerify(this, b1, (IVisitablePointable) k1, b2, (IVisitablePointable) k2, c);
+        // due to using an assign-one approach, there can't be any duplicates that need to be filtered out
+        return verify(k1, k2);
     }
 }

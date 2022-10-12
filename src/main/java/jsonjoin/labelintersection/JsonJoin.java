@@ -52,8 +52,8 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
                 .map(Map.Entry::getKey)
                 .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
-        // the first [0, threshold] buckets are reserved for trees with a size in [0, threshold]
-        int bucketCounter = (int) THRESHOLD;
+        // bucket 0 is reserved for small trees (i.e. trees with a size in [0, threshold])
+        int bucketCounter = 0;
 
         // insert (label, type) tuples into a hash map and assign lower buckets to less frequent tuples
         for (LabelTypeTuple key : invertedFrequencySortedLabelTypeTuples)
@@ -117,8 +117,10 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
 
         // compute deduped (min(|T|, threshold + 1))-prefix
         if (jsonTree.size() <= THRESHOLD) {
-            // Two trees T1, T2 will have JEDI(T1, T2) <= THRESHOLD if |T1| + |T2| <= THRESHOLD even if they don't
-            // have a (label, type) tuple in common. => put tree T into bucket |T| and accommodate for this in match()
+            // Two small trees T1, T2 (T is small tree iff |T| <= THRESHOLD) can have JEDI(T1, T2) <= THRESHOLD even if
+            // they don't have a (label, type) tuple in common. => put small trees into bucket 0, too
+            // For small trees T1, T2 it holds that they always have to be considered as candidates (size filter would
+            // not prune any further since |T1| <= THRESHOLD && |T2| <= THRESHOLD => abs(|T1| - |T2|) <= THRESHOLD).
             TreeSet<LabelTypeBucketTuple> invertedFrequency = new TreeSet<>();
 
             for (Node node : jsonTree) {
@@ -128,7 +130,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
             }
 
             buckets = new int[invertedFrequency.size() + 1];
-            buckets[0] = jsonTree.size();
+            buckets[0] = 0; // small trees are also assigned to bucket 0
 
             Iterator<LabelTypeBucketTuple> it = invertedFrequency.iterator();
             for (int i = 1; it.hasNext(); ++i) {
@@ -187,16 +189,6 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
     @Override
     public boolean verify(int b1, Object k1, int b2, Object k2, JsonJoinConfiguration c) {
         return JEDI_VERIFIER.duplicateAvoidingVerify(this, b1, (IVisitablePointable) k1, b2, (IVisitablePointable) k2, c);
-    }
-
-    @Override
-    public boolean match(int b1, int b2) {
-        // guaranteed match through de- and reconstruction of both trees (buckets in [0, THRESHOLD] are reserved for
-        // trees with a size in [0, THRESHOLD]).
-        if (b1 + b2 <= THRESHOLD)
-            return true;
-        else
-            return b1 == b2;
     }
 
 }
