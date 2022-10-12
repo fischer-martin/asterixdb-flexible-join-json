@@ -28,4 +28,5 @@ test: default
 clean:
 	rm -rf target
 	rm -rf test/test-data/results
+	rm -rf test/test-data/statements
 	rm -rf test/test-data/lib
