@@ -9,3 +9,4 @@ AT `{join_library}`;
 DROP FUNCTION jsonjoin_label_intersection_fj_global_summary_two(a);
 DROP FUNCTION jsonjoin_label_intersection_fj_local_summary_two(a);
 DROP FUNCTION jsonjoin_label_intersection_fj_assign_two(a, b);
+DROP FUNCTION jsonjoin_label_intersection_match(a, b);
