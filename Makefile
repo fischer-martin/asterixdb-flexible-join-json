@@ -30,3 +30,4 @@ clean:
 	rm -rf test/test-data/results
 	rm -rf test/test-data/statements
 	rm -rf test/test-data/lib
+	rm -rf test/test-config.json

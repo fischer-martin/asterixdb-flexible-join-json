@@ -160,22 +160,32 @@ argparser.add_argument("-c", "--config", help = "config for generation of a benc
 argparser.add_argument("-o", "--output", help = "benchmarking config output", type = str, required = True)
 argparser.add_argument("-r", "--data-root", help = "data directory", type = str, required = True)
 argparser.add_argument("-sn", "--skip-native", help = "skips generation of runs for native JEDI implementation", action = "store_true")
-argparser.add_argument("-si", "--skip-interval", help = "skips generation of runs for interval FJ", action = "store_true")
-argparser.add_argument("-sli", "--skip-label-intersection", help = "skips generation of runs for label intersection FJ", action = "store_true")
+argparser.add_argument("-snlf", "--skip-native-length-filter", help = "skips generation of runs for native JEDI + length filter implementation", action = "store_true")
+argparser.add_argument("-snli", "--skip-native-label-intersection", help = "skips generation of runs for native JEDI + label intersection filter implementation", action = "store_true")
+argparser.add_argument("-sfjlf", "--skip-fj-length-filter", help = "skips generation of runs for length filter FJ", action = "store_true")
+argparser.add_argument("-sfjli", "--skip-fj-label-intersection", help = "skips generation of runs for label intersection FJ", action = "store_true")
 CONSOLE_ARGUMENTS = argparser.parse_args()
 
 join_types = []
 if not CONSOLE_ARGUMENTS.skip_native:
     join_types.append("native")
-if not CONSOLE_ARGUMENTS.skip_interval:
-    join_types.append("fj_interval")
-if not CONSOLE_ARGUMENTS.skip_label_intersection:
+if not CONSOLE_ARGUMENTS.skip_native_length_filter:
+    join_types.append("native_length_filter")
+if not CONSOLE_ARGUMENTS.skip_native_label_intersection:
+    join_types.append("native_intersection_lower_bound")
+if not CONSOLE_ARGUMENTS.skip_fj_length_filter:
+    join_types.append("fj_length_filter")
+if not CONSOLE_ARGUMENTS.skip_fj_label_intersection:
     join_types.append("fj_label_intersection")
 if not join_types:
     argparser.error("can't skip every join type")
 fj_join_types = join_types.copy()
 if "native" in fj_join_types:
     fj_join_types.remove("native")
+if "native_length_filter" in fj_join_types:
+    fj_join_types.remove("native_length_filter")
+if "native_intersection_lower_bound" in fj_join_types:
+    fj_join_types.remove("native_intersection_lower_bound")
 
 
 config = read_file_content(CONSOLE_ARGUMENTS.config, True)
