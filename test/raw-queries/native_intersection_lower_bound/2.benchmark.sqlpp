@@ -1,0 +1,9 @@
+USE {dataverse};
+
+SELECT ds1.recordid AS d1, ds2.recordid AS d2
+FROM {dataset1} ds1, {dataset2} ds2
+-- lazy eval in AsterixDB seems to work the other way around than one would expect
+WHERE jedi(ds1{subdoc1}, ds2{subdoc2}) <= {threshold}
+    AND intersection_lower_bound(ds1{subdoc1}, ds2{subdoc2}) <= {threshold}
+    AND ds1.recordid != ds2.recordid
+ORDER BY ds1.recordid, ds2.recordid;
