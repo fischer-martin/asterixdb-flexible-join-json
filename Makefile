@@ -8,6 +8,7 @@ test: default
 	@data_dir="test/test-data"
 	@result_prefix="test_results"
 
+	@rm -rf $${data_dir}/results
 	@mkdir -p $${data_dir}/lib
 	@zip -FSj $${data_dir}/lib/flexiblejoin.jar.zip target/*.jar
 	@echo
