@@ -32,6 +32,7 @@ argparser.add_argument("-snlf", "--skip-native-length-filter", help = "skips gen
 argparser.add_argument("-snli", "--skip-native-label-intersection", help = "skips generation of runs for native JEDI + label intersection filter implementation", action = "store_true")
 argparser.add_argument("-sfjlf", "--skip-fj-length-filter", help = "skips generation of runs for length filter FJ", action = "store_true")
 argparser.add_argument("-sfjli", "--skip-fj-label-intersection", help = "skips generation of runs for label intersection FJ", action = "store_true")
+argparser.add_argument("-sfjsli", "--skip-fj-shadow-label-intersection", help = "skips generation of runs for label intersection shadow FJ", action = "store_true")
 CONSOLE_ARGUMENTS = argparser.parse_args()
 
 join_types = ["native"]
@@ -43,6 +44,8 @@ if not CONSOLE_ARGUMENTS.skip_fj_length_filter:
     join_types.append("fj_length_filter")
 if not CONSOLE_ARGUMENTS.skip_fj_label_intersection:
     join_types.append("fj_label_intersection")
+if not CONSOLE_ARGUMENTS.skip_fj_shadow_label_intersection:
+    join_types.append("fj_shadow_label_intersection")
 optimized_join_types = join_types.copy()
 optimized_join_types.remove("native")
 
