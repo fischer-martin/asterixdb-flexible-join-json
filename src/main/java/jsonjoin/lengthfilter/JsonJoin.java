@@ -30,17 +30,11 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
 
     @Override
     public JsonJoinConfiguration divide(Summary<Object> s1, Summary<Object> s2) {
-        JsonSummary jsonSummary1 = (JsonSummary) s1;
-        JsonSummary jsonSummary2 = (JsonSummary) s2;
-
-        int min = Math.min(jsonSummary1.getMinSize(), jsonSummary2.getMinSize());
-
-        return new JsonJoinConfiguration(min);
+        return new JsonJoinConfiguration();
     }
 
     private int[] getBucketForTreeSize(int treeSize, JsonJoinConfiguration jsonJoinConfiguration) {
-        // normalize buckets since idk if it is less efficient if our buckets don't start at 0
-        return new int[]{treeSize - jsonJoinConfiguration.getMinSize()};
+        return new int[]{ treeSize };
     }
 
     @Override

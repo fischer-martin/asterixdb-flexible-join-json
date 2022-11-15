@@ -1,41 +1,20 @@
 package jsonjoin.lengthfilter;
 
-import jsonjoin.jsontools.JSONTreeConverterHelper;
 import org.apache.asterix.external.cartilage.base.Summary;
-import org.apache.asterix.om.pointables.base.IVisitablePointable;
-import org.apache.hyracks.api.exceptions.HyracksDataException;
 
+/**
+ * This class doesn't serve any actual use (apart from being required by the framework) since we don't need to
+ * store any information in order to use the length filter.
+ */
 public class JsonSummary implements Summary<Object> {
 
-    private int minSize = Integer.MAX_VALUE;
-
     public void add(Object k) {
-        IVisitablePointable key = (IVisitablePointable) k;
-        int jsonTreeSize;
-        JSONTreeConverterHelper JSONTreeConverterHelper = new JSONTreeConverterHelper();
-
-        try {
-            jsonTreeSize = JSONTreeConverterHelper.calculateTreeSize(key);
-        } catch (HyracksDataException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (jsonTreeSize < minSize) {
-            minSize = jsonTreeSize;
-        }
+        // nop
     }
 
     @Override
     public void add(Summary<Object> s) {
-        JsonSummary jsonSummary = (JsonSummary) s;
-
-        if (jsonSummary.minSize < minSize) {
-            minSize = jsonSummary.minSize;
-        }
-    }
-
-    public int getMinSize() {
-        return minSize;
+        // nop
     }
 
 }
