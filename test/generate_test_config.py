@@ -162,6 +162,7 @@ argparser.add_argument("-r", "--data-root", help = "data directory", type = str,
 argparser.add_argument("-sn", "--skip-native", help = "skips generation of runs for native JEDI implementation", action = "store_true")
 argparser.add_argument("-snlf", "--skip-native-length-filter", help = "skips generation of runs for native JEDI + length filter implementation", action = "store_true")
 argparser.add_argument("-snli", "--skip-native-label-intersection", help = "skips generation of runs for native JEDI + label intersection filter implementation", action = "store_true")
+argparser.add_argument("-snjof", "--skip-native-jofilter", help = "skips generation of runs for native JEDI + JOFilter implementation", action = "store_true")
 argparser.add_argument("-sfjlf", "--skip-fj-length-filter", help = "skips generation of runs for length filter FJ", action = "store_true")
 argparser.add_argument("-sfjli", "--skip-fj-label-intersection", help = "skips generation of runs for label intersection FJ", action = "store_true")
 argparser.add_argument("-sfjsli", "--skip-fj-shadow-label-intersection", help = "skips generation of runs for label intersection shadow FJ", action = "store_true")
@@ -174,6 +175,8 @@ if not CONSOLE_ARGUMENTS.skip_native_length_filter:
     join_types.append("native_length_filter")
 if not CONSOLE_ARGUMENTS.skip_native_label_intersection:
     join_types.append("native_intersection_lower_bound")
+if not CONSOLE_ARGUMENTS.skip_native_jofilter:
+    join_types.append("native_jofilter")
 if not CONSOLE_ARGUMENTS.skip_fj_length_filter:
     join_types.append("fj_length_filter")
 if not CONSOLE_ARGUMENTS.skip_fj_label_intersection:
@@ -189,6 +192,8 @@ if "native_length_filter" in fj_join_types:
     fj_join_types.remove("native_length_filter")
 if "native_intersection_lower_bound" in fj_join_types:
     fj_join_types.remove("native_intersection_lower_bound")
+if "native_jofilter" in fj_join_types:
+    fj_join_types.remove("native_jofilter")
 
 
 config = read_file_content(CONSOLE_ARGUMENTS.config, True)
