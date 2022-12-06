@@ -15,7 +15,7 @@ test: default
 	@echo
 	@echo
 	@echo -n "generating config... "
-	@python3 test/generate_test_config.py --config $${gen_config} --output $${benchmark_config} --data-root $${data_dir}
+	@python3 test/generate_test_config.py --skip-fj-shadow-label-intersection --config $${gen_config} --output $${benchmark_config} --data-root $${data_dir}
 	@echo "done"
 	@echo
 	@echo "retrieving query results..."
@@ -23,7 +23,7 @@ test: default
 	@echo "done"
 	@echo
 	@echo "comparing query results..."
-	@python3 test/compare_results.py --config $${gen_config} --data-root $${data_dir} --result-filename-prefix $${result_prefix}
+	@python3 test/compare_results.py --skip-fj-shadow-label-intersection --config $${gen_config} --data-root $${data_dir} --result-filename-prefix $${result_prefix}
 	@echo "done"
 
 clean:
