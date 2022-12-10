@@ -31,7 +31,7 @@
     <dependency>
         <artifactId>asterix-external-data</artifactId>
         <groupId>org.apache.asterix</groupId>
-        <version>0.9.7-SNAPSHOT</version>
+        <version>0.9.8-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
