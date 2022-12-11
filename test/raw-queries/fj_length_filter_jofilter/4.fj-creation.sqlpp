@@ -1,0 +1,11 @@
+USE {dataverse};
+
+CREATE JOIN jsonjoin_length_filter_jofilter(a, b, threshold: double)
+RETURNS BOOLEAN
+AS "jsonjoin.lengthfilter.JOFilterJsonJoin"
+AT `{join_library}`;
+
+-- workaround since the detection for overridden functions in QueryTranslator is currently disabled due to a bug when running the DB __not__ through AsterixHyracksIntegrationUtil
+DROP FUNCTION jsonjoin_length_filter_jofilter_fj_global_summary_two(a);
+DROP FUNCTION jsonjoin_length_filter_jofilter_fj_local_summary_two(a);
+DROP FUNCTION jsonjoin_length_filter_jofilter_fj_assign_two(a, b);

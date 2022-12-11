@@ -16,9 +16,9 @@ import java.util.*;
 // Maybe (sadly I am not a wizard who knows everything about Java) this happens due to IVisitablePointable being an interface.
 public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration> {
 
-    private final double THRESHOLD;
+    final double THRESHOLD;
     private final JSONTreeConverterHelper JSON_TREE_CONVERTER_HELPER = new JSONTreeConverterHelper();
-    private final JEDIVerifier JEDI_VERIFIER = new JEDIVerifier();
+    final JEDIVerifier JEDI_VERIFIER = new JEDIVerifier();
 
     public JsonJoin(double threshold) {
         this.THRESHOLD = threshold;
@@ -111,7 +111,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
     }
 
     @Override
-    public int[] assign1Parsed(List<Node> jsonTree, JsonJoinConfiguration jsonJoinConfiguration) {
+    public int[] assign1Parsed(List<? extends Node> jsonTree, JsonJoinConfiguration jsonJoinConfiguration) {
         final int PREFIX_LENGTH = (int) THRESHOLD + 1;
         int[] buckets;
 
@@ -177,7 +177,7 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
     }
 
     @Override
-    public boolean verifyParsed(List<Node> k1, List<Node> k2) {
+    public boolean verifyParsed(List<? extends Node> k1, List<? extends Node> k2) {
         return JEDI_VERIFIER.verifyParsed(k1, k2, THRESHOLD);
     }
 

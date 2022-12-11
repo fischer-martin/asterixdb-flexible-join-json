@@ -7,6 +7,7 @@ import org.apache.asterix.om.pointables.base.IVisitablePointable;
 import org.apache.asterix.om.types.ATypeTag;
 import org.apache.asterix.om.util.container.IObjectPool;
 import org.apache.asterix.om.util.container.ListObjectPool;
+import org.apache.asterix.runtime.evaluators.common.JOFilterTree;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.asterix.runtime.evaluators.common.JSONTreeTransformator;
@@ -17,8 +18,10 @@ import java.util.List;
 
 public class JSONTreeConverterHelper {
 
-    private MutablePair<List<Node>, IntIntPair> transArg = new MutablePair<>();
-    private IntIntPair transCnt = new IntIntMutablePair(0, 0);
+    private MutablePair<List<Node>, IntIntPair> transArgJSONTree = new MutablePair<>();
+    private IntIntPair transCntJSONTree = new IntIntMutablePair(0, 0);
+    private MutablePair<JOFilterTree, int[]> transArgJOFilterTree = new MutablePair<>();
+    private int[] transCntJOFilterTree = new int[3];
     private MutableInt nodeCounter = new MutableInt();
     private final IObjectPool<List<Node>, ATypeTag> listAllocator = new ListObjectPool<>(new ArrayListFactory<Node>());
     private final JSONTreeTransformator treeTransformator = new JSONTreeTransformator();
@@ -34,12 +37,23 @@ public class JSONTreeConverterHelper {
         // Convert the given data items into JSON trees.
         List<Node> postorderedTree = listAllocator.allocate(null);
         postorderedTree.clear(); // ListObjectPool reuses Lists but does not clear them
-        transArg.setLeft(postorderedTree);
-        transCnt.first(0);
-        transCnt.second(0);
-        transArg.setRight(transCnt);
+        transArgJSONTree.setLeft(postorderedTree);
+        transCntJSONTree.first(0);
+        transCntJSONTree.second(0);
+        transArgJSONTree.setRight(transCntJSONTree);
 
-        return treeTransformator.toTree(input, transArg);
+        return treeTransformator.toTree(input, transArgJSONTree);
+    }
+
+    public JOFilterTree toJOFilterTree(IVisitablePointable input, JOFilterTree tree) throws HyracksDataException {
+        tree.reset();
+        transArgJOFilterTree.setLeft(tree);
+        transCntJOFilterTree[0] = 0;
+        transCntJOFilterTree[1] = 0;
+        transCntJOFilterTree[2] = 0;
+        transArgJOFilterTree.setRight(transCntJOFilterTree);
+
+        return treeTransformator.toJOFilterTree(input, transArgJOFilterTree);
     }
 
     /**

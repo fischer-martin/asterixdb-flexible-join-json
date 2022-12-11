@@ -1,6 +1,5 @@
 package jsonjoin.jsontools;
 
-import org.apache.asterix.om.pointables.AFlatValuePointable;
 import org.apache.asterix.runtime.evaluators.common.Node;
 import org.apache.asterix.runtime.evaluators.common.HungarianAlgorithm;
 
@@ -31,45 +30,7 @@ public class JEDICalculator {
     int rowLB;
     int colLB;
 
-    private class JSONCostModel {
-        double ins;
-        double del;
-        double ren;
-
-        public JSONCostModel(double ins, double del, double ren) {
-            this.ins = ins;
-            this.del = del;
-            this.ren = ren;
-        }
-
-        public double ins(Node n) {
-            return ins;
-        }
-
-        public double del(Node n) {
-            return del;
-        }
-
-        public double ren(Node m, Node n) {
-            if (m.getType() == n.getType()) {
-                if (m.getLabel().getClass().getName().compareTo(n.getLabel().getClass().getName()) == 0) {
-                    if (m.getLabel() instanceof AFlatValuePointable) {
-                        if (m.getLabel().equals(n.getLabel())) {
-                            return 0; // 0 cost if the node type, data type, and values are identical.
-                        }
-                        return ren; // Rename cost if values are different.
-                    } else {
-                        return 0; // Objects, arrays, and multisets always match.
-                    }
-                } else { // Comment else to disable renames of different literal types.
-                    return ren; // Rename cost if data types are different.
-                }
-            }
-            return Double.POSITIVE_INFINITY; // Different node types.
-        }
-    }
-
-    public double jedi(List<Node> t1, List<Node> t2) {
+    public double jedi(List<? extends Node> t1, List<? extends Node> t2) {
         int sizeT1 = t1.size();
         int sizeT2 = t2.size();
 
@@ -124,7 +85,7 @@ public class JEDICalculator {
         return treeDistanceMatrix[sizeT1][sizeT2];
     }
 
-    private void computeRenameCosts(List<Node> t1, List<Node> t2, int i, int j) {
+    private void computeRenameCosts(List<? extends Node> t1, List<? extends Node> t2, int i, int j) {
         // Cost for renaming node i in t1 to node j in t2, i.e., find a minimum cost matching between i's and
         // j's children subtrees.
         forestRenameCost = Double.POSITIVE_INFINITY;
@@ -260,7 +221,7 @@ public class JEDICalculator {
         }
     }
 
-    private void computeInsertionCosts(List<Node> t2, int i, int j) {
+    private void computeInsertionCosts(List<? extends Node> t2, int i, int j) {
         // Cost for inserting node j in t2, i.e., map the subtree of node i in t1 to a subtree of j's children
         // with minimum cost.
         if (!t2.get(j - 1).getChildren().isEmpty()) {
@@ -282,7 +243,7 @@ public class JEDICalculator {
         treeInsertCost += treeDistanceMatrix[0][j];
     }
 
-    private void computeDeletionCosts(List<Node> t1, int i, int j) {
+    private void computeDeletionCosts(List<? extends Node> t1, int i, int j) {
         // Cost for deleting node i in t1, i.e., map the subtree of node j in t2 to a subtree of i's children
         // with minimum cost.
         if (!t1.get(i - 1).getChildren().isEmpty()) {
@@ -304,7 +265,7 @@ public class JEDICalculator {
         treeDeleteCost += treeDistanceMatrix[i][0];
     }
 
-    private double getAggregateSizeLB(List<Node> t1, List<Node> t2, int i, int j) {
+    private double getAggregateSizeLB(List<? extends Node> t1, List<? extends Node> t2, int i, int j) {
         double aggregateSizeLB = 0; // Lower bound value.
         int k; // Children size difference.
         // In case that none of the two nodes has children, the aggregate size lower bound is 0.
@@ -326,7 +287,7 @@ public class JEDICalculator {
         return aggregateSizeLB;
     }
 
-    private double getSizeDiff(List<Node> t1, List<Node> t2, double aggregateSizeLB, int k, int i, int j) {
+    private double getSizeDiff(List<? extends Node> t1, List<? extends Node> t2, double aggregateSizeLB, int k, int i, int j) {
         aggregateSizeLB += t2.get(j - 1).getSas().getInt(k - 1);
         if (!t1.get(i - 1).getChildren().isEmpty()) {
             aggregateSizeLB +=
@@ -337,7 +298,7 @@ public class JEDICalculator {
         return aggregateSizeLB;
     }
 
-    public void prepareJEDI(List<Node> jsonTree1, List<Node> jsonTree2) {
+    public void prepareJEDI(List<? extends Node> jsonTree1, List<? extends Node> jsonTree2) {
         // Declare tree distance, forest distance, and string edit distance matrices.
         int sizeT1 = jsonTree1.size();
         int sizeT2 = jsonTree2.size();

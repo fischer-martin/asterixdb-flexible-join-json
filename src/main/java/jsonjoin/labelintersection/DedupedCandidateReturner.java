@@ -11,7 +11,7 @@ public class DedupedCandidateReturner extends JsonJoin {
     }
 
     @Override
-    public boolean verifyParsed(List<Node> k1, List<Node> k2) {
+    public boolean verifyParsed(List<? extends Node> k1, List<? extends Node> k2) {
         return true;
     }
 

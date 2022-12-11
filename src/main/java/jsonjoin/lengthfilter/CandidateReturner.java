@@ -11,7 +11,7 @@ public class CandidateReturner extends JsonJoin {
     }
 
     @Override
-    public boolean verifyParsed(List<Node> k1, List<Node> k2) {
+    public boolean verifyParsed(List<? extends Node> k1, List<? extends Node> k2) {
         // Overriding this method isn't actually necessary since the framework actually only cares about the
         // verify(int b1, Object k1, int b2, Object k2, JsonJoinConfiguration c) method, but I'm still doing
         // it for the sake of completeness,
