@@ -31,7 +31,7 @@ public class JsonSummary implements Summary<Object> {
 
         for (Node node : jsonTree) {
             LabelTypeTuple lookupKey = new LabelTypeTuple(node.getLabel(), node.getType());
-            MutableInt count = labelTypeCounts.get(key);
+            MutableInt count = labelTypeCounts.get(lookupKey);
 
             if (count == null) {
                 labelTypeCounts.put(lookupKey, new MutableInt(1));
@@ -53,9 +53,9 @@ public class JsonSummary implements Summary<Object> {
 
             //labelTypeCounts.merge(ltc.getKey(), ltc.getValue(), (x, y) -> new MutableInt(x.getValue() + y.getValue()));
             if (count == null) {
-                labelTypeCounts.put(lookupKey, new MutableInt(otherCount.getValue()));
+                labelTypeCounts.put(lookupKey, new MutableInt(otherCount.intValue()));
             } else {
-                count.add(otherCount.getValue());
+                count.add(otherCount.intValue());
             }
         }
     }
