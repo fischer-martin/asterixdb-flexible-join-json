@@ -1,3 +1,6 @@
 [submodule "test/asterixdb-benchmarking"]
 	path = test/asterixdb-benchmarking
 	url = git@frosch.cosy.sbg.ac.at:mfischer/asterixdb-benchmarking.git
+[submodule "test/test-data/datasets/reddit"]
+	path = test/test-data/datasets/reddit
+	url = https://frosch.cosy.sbg.ac.at/datasets/json/reddit.git

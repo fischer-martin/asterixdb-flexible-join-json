@@ -18,8 +18,32 @@
     "join_library": "flexiblejoin.jar.zip",
 
     "tests": {
+        "self-join-reddit": {
+            "enabled": true,
+            "generate_ids": true,
+            "datasets": {
+                "1": {
+                    "file": "reddit/reddit.json",
+                    "format": "json",
+                    "subdoc": null
+                },
+                "2": null
+            },
+            "config": {
+                "thresholds": [
+                    18,
+                    19,
+                    21,
+                    22,
+                    23,
+                    26,
+                    27
+                ]
+            }
+        },
         "self-join": {
             "enabled": true,
+            "generate_ids": false,
             "datasets": {
                 "1": {
                     "file": "random-gen/n20_s2_irecordid.adm",
@@ -43,6 +67,7 @@
         },
         "join": {
             "enabled": true,
+            "generate_ids": false,
             "datasets": {
                 "1": {
                     "file": "random-gen/n20_s2_irecordid.adm",
@@ -70,6 +95,7 @@
         },
         "join_with_subdocs": {
             "enabled": false,
+            "generate_ids": false,
             "datasets": {
                 "1": {
                     "file": "random-gen/n70_s3_c7_0_3_ktic_irecordid.adm",
@@ -97,6 +123,7 @@
         },
         "join_with_one_subdoc": {
             "enabled": false,
+            "generate_ids": false,
             "datasets": {
                 "1": {
                     "file": "random-gen/n40_s4_c7_0_3_ktoc_irecordid.adm",
@@ -124,6 +151,7 @@
         },
         "self-join_with_subdoc": {
             "enabled": false,
+            "generate_ids": false,
             "datasets": {
                 "1": {
                     "file": "random-gen/n40_s4_c7_0_3_ktoc_irecordid.adm",
