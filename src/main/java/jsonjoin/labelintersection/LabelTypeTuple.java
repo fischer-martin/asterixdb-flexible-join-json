@@ -1,7 +1,12 @@
 package jsonjoin.labelintersection;
 
+import org.apache.asterix.dataflow.data.nontagged.serde.AObjectSerializerDeserializer;
+import org.apache.asterix.om.base.IAObject;
+import org.apache.hyracks.api.exceptions.HyracksDataException;
 import org.apache.hyracks.data.std.api.IPointable;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
@@ -69,4 +74,39 @@ public final class LabelTypeTuple implements Serializable, Comparable<LabelTypeT
         }
         return type - other.type;
     }
+
+    private static String typeToString(int type) {
+        switch (type) {
+            case 1:
+                return "LITERAL";
+            case 2:
+                return "KEY";
+            case 3:
+                return "OBJECT";
+            case 4:
+                return "ARRAY";
+            case 5:
+                return "MULTISET";
+            default:
+                throw new IllegalArgumentException("type with ID " + type + " does not exist");
+        }
+    }
+
+    // Implemented for debugging purposes.
+    @Override
+    public String toString() {
+        AObjectSerializerDeserializer serDe = AObjectSerializerDeserializer.INSTANCE;
+        IAObject deserializedLabel = null;
+
+        if (label != null) {
+            try {
+                deserializedLabel = serDe.deserialize(new DataInputStream(new ByteArrayInputStream(label)));
+            } catch (HyracksDataException exc) {
+                throw new RuntimeException(exc);
+            }
+        }
+
+        return "(" + (label == null ? "null" : deserializedLabel.toString()) + ", " + typeToString(type) + ")";
+    }
+
 }

@@ -118,9 +118,9 @@ public class JsonJoin implements FlexibleJSONJoin<Object, JsonJoinConfiguration>
         // compute deduped (min(|T|, threshold + 1))-prefix
         if (jsonTree.size() <= THRESHOLD) {
             // Two small trees T1, T2 (T is small tree iff |T| <= THRESHOLD) can have JEDI(T1, T2) <= THRESHOLD even if
-            // they don't have a (label, type) tuple in common. => put small trees into bucket 0, too
+            // they don't have a (label, type) tuple in common. => put small trees into bucket 0, too.
             // For small trees T1, T2 it holds that they always have to be considered as candidates (size filter would
-            // not prune any further since |T1| <= THRESHOLD && |T2| <= THRESHOLD => abs(|T1| - |T2|) <= THRESHOLD).
+            // not prune any further since |T1| <= THRESHOLD && |T2| <= THRESHOLD implies that abs(|T1| - |T2|) <= THRESHOLD).
             TreeSet<LabelTypeBucketTuple> invertedFrequency = new TreeSet<>();
 
             for (Node node : jsonTree) {
